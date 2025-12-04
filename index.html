@@ -285,6 +285,13 @@
       flex: 1 1 100%;
     }
 
+    .total-info, .free-note {
+      font-size: 12px;
+      color: #555;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
     #errorMsg {
       margin-top: 4px;
       font-size: 12px;
@@ -343,6 +350,11 @@
           <div class="label-block">렌탈료 면제 횟수</div>
           <input id="freeCount" type="text" placeholder="예: 3" inputmode="numeric" />
         </div>
+       
+         <div id="freeNote" class="free-note" style="display:none;">
+          설치월 렌탈료는 설치일자에 따라 일할 계산되어,
+          면제 횟수 적용 시 실제 청구 금액과 견적 간에 차이가 발생할 수 있습니다.
+        </div>  
       </div>
 
       <!-- 계산결과 위박스 -->
@@ -396,6 +408,12 @@
           <div class="total-strong">
             <span>실 납부 총액</span>
             <span id="finalTotalText">-</span>
+          </div>
+
+          <!-- 🔹 설치월 안내 멘트 -->
+          <div class="total-info">
+            설치월 렌탈료는 설치일자 및 프로모션 조건에 따라 일할 계산·면제 기준이 달라져,
+            실제 청구 금액과 본 견적 간에 차이가 발생할 수 있습니다.
           </div>
 
           <div id="negativeNotice" class="negative-notice">
@@ -699,6 +717,7 @@
   </script>
 </body>
 </html>
+
 
 
 
