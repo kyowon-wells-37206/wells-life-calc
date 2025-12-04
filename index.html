@@ -287,7 +287,7 @@
 
     .total-info, .free-note {
       font-size: 12px;
-      color: #555;
+      color: var(--danger);
       margin-top: 6px;
       line-height: 1.4;
     }
@@ -452,6 +452,9 @@
     const totalDiscountDetail = document.getElementById("totalDiscountDetail");
     const finalTotalText = document.getElementById("finalTotalText");
     const negativeNotice = document.getElementById("negativeNotice");
+
+    const installInfo = document.getElementById("installInfo");
+    const freeNote = document.getElementById("freeNote");
 
     const errorMsg = document.getElementById("errorMsg");
     const extraBox = document.getElementById("extraBox");
@@ -709,6 +712,14 @@
     freeCountInput.addEventListener("input", () => {
       const raw = freeCountInput.value.replace(/[^0-9]/g, "");
       freeCountInput.value = raw || "";
+
+      // 🔹 면제 횟수 안내 멘트 표시/숨김
+      if (raw) {
+        freeNote.style.display = "block";  // 값 있을 때 나타남
+      } else {
+        freeNote.style.display = "none";   // 값 지우면 사라짐
+      }
+      
       calculate();
     });
 
@@ -717,6 +728,7 @@
   </script>
 </body>
 </html>
+
 
 
 
