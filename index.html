@@ -136,7 +136,7 @@
       font-weight: 700;
     }
 
-    /* 🔵 변경: 할인 적용 월 납부액 결과값 18px */
+    /* 🔵 할인 적용 월 납부액 결과값 18px */
     .result-row.strong .result-value {
       font-size: 18px;
       font-weight: 700;
@@ -161,6 +161,12 @@
     /* 라이프 제휴 상세 왼쪽 텍스트 빨간색 */
     .discount-sub-line span:first-child {
       color: var(--danger);
+    }
+
+    /* 위 박스 – 할인 상세와 월 납부액 사이 점선 */
+    .result-divider {
+      border-top: 1px dashed var(--wells-light-gray);
+      margin: 8px 0 4px;
     }
 
     /* 아래 박스 */
@@ -218,13 +224,7 @@
       margin-bottom: 2px;
     }
 
-    /* 🔵 변경: 실 납부 총액 결과값 18px 적용 */
-    .total-strong span:last-child {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text-dark);
-    }
-
+    /* 🔵 실 납부 총액 결과값 18px + 중앙정렬 */
     .total-strong {
       margin-top: 10px;
       padding-top: 10px;
@@ -235,6 +235,12 @@
       font-size: 16px;
       font-weight: 700;
       color: var(--wells-blue);
+    }
+
+    .total-strong span:last-child {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
     }
 
     .negative-notice {
@@ -291,7 +297,7 @@
       <h1 class="title">렌탈 견적 계산기</h1>
       <p class="subtitle">월 렌탈료 · 약정 · 라이프 제휴 할인 적용 견적 계산</p>
 
-      <!-- 입력 --->
+      <!-- 입력 -->
       <div class="form-row">
         <div class="label-block">월 렌탈료</div>
         <input id="monthlyFee" type="text" placeholder="예: 30,000" inputmode="numeric" />
@@ -320,7 +326,7 @@
         </select>
       </div>
 
-      <!-- 오류 메시지 (라이프제휴 아래로) -->
+      <!-- 오류 메시지 -->
       <div id="errorMsg"></div>
 
       <!-- 추가 옵션 -->
@@ -350,6 +356,9 @@
         </div>
 
         <div id="monthlyLifeLines" class="discount-sub"></div>
+
+        <!-- 🔵 위 박스 점선 구분선 -->
+        <div class="result-divider"></div>
 
         <div class="result-row strong">
           <div class="result-label main-label">할인 적용 월 납부액</div>
@@ -687,6 +696,3 @@
   </script>
 </body>
 </html>
-
-
-
