@@ -1,3 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>웰스 라이프 제휴 렌탈 견적 계산기</title>
+  <style>
+    :root {
+      --wells-blue: #005776;
+      --wells-light-blue: #2dccd3;
+      --wells-light-gray: #bfced6;
+      --wells-border-gray: #cfd8dc;
+      --text-dark: #12313f;
+      --danger: #d32f2f;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 8px;
+      background: #f4f7fa;
+      color: #222;
+    }
+
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 3px solid var(--wells-blue);
+      padding: 24px 22px 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 4px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--wells-blue);
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 18px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .label-block {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--wells-border-gray);
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+      background-color: #ffffff;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--wells-light-blue);
+      box-shadow: 0 0 0 2px rgba(45, 204, 211, 0.3);
+    }
+
+    /* 결과 제목 */
+    .section-title {
+      margin-top: 18px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--wells-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: "◆";
+      font-size: 11px;
+    }
+
+    /* 위 박스 */
+    .result-box {
+      margin-top: 8px;
+      background: #f6f9fb;
+      border-radius: 18px;
+      border: 1px solid var(--wells-light-gray);
+      padding: 14px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .result-label.main-label {
+      font-weight: 700;
+      color: var(--wells-blue);
+      font-size: 14px;
+    }
+
+    .result-value {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-dark);
+    }
+
+    .result-row.main-row .result-value {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .discount-sub {
+      margin-left: 10px;
+      font-size: 13px;
+    }
+
+    .discount-sub-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .negative {
+      color: var(--danger);
+    }
+
+    /* 아래박스 */
+    .total-box {
+      margin-top: 8px;
+      background: #f6f9fb;
+      border-radius: 18px;
+      border: 1px solid var(--wells-light-gray);
+      padding: 16px 14px;
+    }
+
+    .total-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--wells-blue);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      align-items: flex-end;
+    }
+
+    .formula-text {
+      font-size: 12px;
+      font-weight: 400;
+      color: #555;
+    }
+
+    .formula-result {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .total-main-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--wells-blue);
+    }
+
+    .total-main-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--danger);
+    }
+
+    .total-sub {
+      margin-left: 12px;
+      margin-top: 4px;
+      font-size: 13px;
+    }
+
+    .total-sub-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .total-strong {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--wells-light-gray);
+      display: flex;
+      justify-content: space-between;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--wells-blue);
+    }
+
+    .negative-notice {
+      display: none;
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .banner-row {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .banner-link {
+      flex: 1 1 48%;
+      min-width: 150px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 10px 8px;
+      border-radius: 999px;
+      background: var(--wells-blue);
+      color: white;
+      font-weight: 600;
+    }
+    .banner-link.secondary {
+      background: var(--wells-light-blue);
+      color: #003c47;
+    }
+    .banner-link.full {
+      flex: 1 1 100%;
+    }
+
+    #errorMsg {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--danger);
+      white-space: pre-line;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1 class="title">렌탈 견적 계산기</h1>
+      <p class="subtitle">월 렌탈료 · 약정 · 라이프 제휴 할인 적용 견적 계산</p>
+
+      <!-- 입력 영역 -->
+      <div class="form-row">
+        <div class="label-block">월 렌탈료</div>
+        <input id="monthlyFee" type="text" placeholder="예: 30,000" inputmode="numeric" />
+      </div>
+
+      <div class="form-row">
+        <div class="label-block">약정 (년)</div>
+        <input id="years" type="text" placeholder="예: 5" inputmode="numeric" />
+      </div>
+
+      <div class="form-row">
+        <div class="label-block">라이프 제휴 1</div>
+        <select id="life1">
+          <option value="none">미적용</option>
+          <option value="599">라이프 599</option>
+          <option value="429">라이프 429</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="label-block">라이프 제휴 2</div>
+        <select id="life2">
+          <option value="none">미적용</option>
+          <option value="599">라이프 599</option>
+          <option value="429">라이프 429</option>
+        </select>
+      </div>
+
+      <!-- 오류 메시지 (라이프 제휴 2 바로 아래 표시) -->
+      <div id="errorMsg"></div>
+
+      <!-- 추가옵션 -->
+      <div class="section-title" style="cursor:pointer;" onclick="extraBox.classList.toggle('open')">
+        + 추가 옵션
+      </div>
+
+      <div id="extraBox" class="total-box" style="display:none;">
+        <div class="form-row">
+          <div class="label-block">렌탈료 면제 횟수</div>
+          <input id="freeCount" type="text" placeholder="예: 3" inputmode="numeric" />
+        </div>
+      </div>
+
+      <!-- 계산결과(위박스) -->
+      <div class="section-title">계산 결과</div>
+      <div class="result-box">
+        <div class="result-row main-row">
+          <div class="result-label main-label">월 렌탈료</div>
+          <div class="result-value" id="baseMonthly">-</div>
+        </div>
+
+        <div class="result-row main-row">
+          <div class="result-label main-label">할인 적용</div>
+          <div class="result-value" id="monthlyDiscountSum">-</div>
+        </div>
+
+        <div id="monthlyLifeLines" class="discount-sub"></div>
+
+        <div class="result-row strong">
+          <div class="result-label main-label">할인 적용 월 납부액</div>
+          <div class="result-value" id="monthlyAfterLife">-</div>
+        </div>
+      </div>
+
+      <!-- 계산결과 (아래박스: 면제 적용 시만 표시) -->
+      <div id="totalSection" style="display:none;">
+        <div class="section-title">계산 결과</div>
+
+        <div class="total-box">
+          <!-- 렌탈 총액 -->
+          <div class="total-title">
+            <span>렌탈 총액</span>
+            <span>
+              <span class="formula-text" id="rentalFormulaText"></span>
+              <span class="formula-result" id="rentalFormulaResult"></span>
+            </span>
+          </div>
+
+          <!-- 할인 적용 합계 -->
+          <div class="total-line">
+            <span class="total-main-label">할인 적용 (합계)</span>
+            <span class="total-main-value" id="totalDiscountSum">-</span>
+          </div>
+
+          <div id="totalDiscountDetail" class="total-sub"></div>
+
+          <!-- 실 납부 총액 -->
+          <div class="total-strong">
+            <span>실 납부 총액</span>
+            <span id="finalTotalText">-</span>
+          </div>
+
+          <div id="negativeNotice" class="negative-notice">
+            잔액은 사용하시는 다른 제품에 전금하시거나 고객센터를 통해 환불받으실 수 있습니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- 배너 -->
+      <div class="banner-row">
+        <a class="banner-link full secondary" href="https://www.kyowonlife.co.kr/Service/LifeServiceList" target="_blank">라이프케어 서비스 확인</a>
+        <a class="banner-link" href="https://www.kyowonwells.com/Benefit/Discount/Card" target="_blank">웰스 제휴카드 확인</a>
+        <a class="banner-link" href="https://www.kyowonlife.co.kr/Benefit/CardList" target="_blank">라이프 제휴카드 확인</a>
+      </div>
+    </div>
+  </div>
   <script>
     const monthlyFeeInput = document.getElementById("monthlyFee");
     const yearsInput = document.getElementById("years");
