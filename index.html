@@ -129,9 +129,17 @@
       color: var(--text-dark);
     }
 
+    /* 월렌탈료 / 할인적용 */
     .result-row.main-row .result-value {
       font-size: 16px;
       font-weight: 700;
+    }
+
+    /* 🔵 변경: 할인 적용 월 납부액 결과값 18px */
+    .result-row.strong .result-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
     }
 
     .discount-sub {
@@ -149,7 +157,7 @@
       color: var(--danger);
     }
 
-    /* 라이프 제휴 상세 왼쪽 텍스트도 빨간색 */
+    /* 라이프 제휴 상세 왼쪽 텍스트 빨간색 */
     .discount-sub-line span:first-child {
       color: var(--danger);
     }
@@ -207,6 +215,13 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 2px;
+    }
+
+    /* 🔵 변경: 실 납부 총액 결과값 18px 적용 */
+    .total-strong span:last-child {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
     }
 
     .total-strong {
@@ -274,7 +289,7 @@
       <h1 class="title">렌탈 견적 계산기</h1>
       <p class="subtitle">월 렌탈료 · 약정 · 라이프 제휴 할인 적용 견적 계산</p>
 
-      <!-- 입력 -->
+      <!-- 입력 --->
       <div class="form-row">
         <div class="label-block">월 렌탈료</div>
         <input id="monthlyFee" type="text" placeholder="예: 30,000" inputmode="numeric" />
@@ -303,7 +318,7 @@
         </select>
       </div>
 
-      <!-- 오류 메시지 (라이프제휴 아래로 이동) -->
+      <!-- 오류 메시지 (라이프제휴 아래로) -->
       <div id="errorMsg"></div>
 
       <!-- 추가 옵션 -->
@@ -356,13 +371,14 @@
           </div>
 
           <!-- 할인 적용 (합계) -->
-          <div class="total-line" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <div class="total-line">
             <span class="total-main-label">할인 적용 (합계)</span>
             <span class="total-main-value" id="totalDiscountSum">-</span>
           </div>
 
           <div id="totalDiscountDetail" class="total-sub"></div>
 
+          <!-- 실 납부 총액 -->
           <div class="total-strong">
             <span>실 납부 총액</span>
             <span id="finalTotalText">-</span>
@@ -384,6 +400,7 @@
 
     </div>
   </div>
+
   <script>
     const monthlyFeeInput = document.getElementById("monthlyFee");
     const yearsInput = document.getElementById("years");
@@ -663,7 +680,7 @@
       calculate();
     });
 
-    // 페이지 로딩 후 초기 계산
+    // 초기 계산
     calculate();
   </script>
 </body>
