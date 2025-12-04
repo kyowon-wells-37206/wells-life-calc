@@ -1,248 +1,29 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>렌탈 견적 계산기</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    body {
-      margin: 0;
-      padding: 16px;
-      background: #f5f5f7;
-    }
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 20px 18px 24px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-    }
-    h1 {
-      font-size: 20px;
-      margin: 0 0 16px;
-      text-align: center;
-    }
-    .subtitle {
-      font-size: 12px;
-      color: #777;
-      text-align: center;
-      margin-bottom: 18px;
-    }
-    .field {
-      margin-bottom: 14px;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    /* 숫자/텍스트 입력 공통 스타일 */
-    input,
-    select {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 14px;
-    }
-    input:focus,
-    select:focus {
-      outline: none;
-      border-color: #0070f3;
-      box-shadow: 0 0 0 2px rgba(0,112,243,0.1);
-    }
-
-    .result {
-      margin-top: 18px;
-      padding: 14px 12px 16px;
-      border-radius: 12px;
-      background: #f0f4ff;
-      font-size: 14px;
-    }
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .pill {
-      display: inline-block;
-      font-size: 15px;          /* 월 납부액보다 크게 */
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #4f46e5;
-      font-weight: 700;
-    }
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-    .result-row span:first-child {
-      color: #555;
-    }
-    .result-row span:last-child {
-      font-weight: 600;
-    }
-    .result-row.strong span {
-      font-size: 16px;
-      color: #4f46e5; /* 계산 결과 pill과 동일 색상 */
-    }
-    .discount-detail {
-      margin-top: 6px;          /* 총 할인 금액과 살짝 띄움 */
-      margin-bottom: 8px;
-      font-size: 12px;          /* 기본보다 크게 */
-      color: #555;
-      line-height: 1.5;
-    }
-    .discount-detail div {
-      margin-top: 2px;
-    }
-    .hint {
-      margin-top: 6px;
-      font-size: 11px;
-      color: #888;
-      line-height: 1.4;
-    }
-    .hint-line {
-      margin-top: 2px;
-    }
-    .error {
-      margin-top: 6px;
-      font-size: 12px;
-      color: #d32f2f;
-      white-space: pre-line;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>렌탈 견적 계산기</h1>
-    <p class="subtitle">월 렌탈료, 약정, 라이프 제휴, 면제 횟수를 기반으로 실납부 총액을 계산합니다.</p>
-
-    <div class="field">
-      <label for="monthlyFee">월 렌탈료 (원)</label>
-      <input
-        id="monthlyFee"
-        type="text"
-        inputmode="numeric"
-        pattern="[0-9]*"
-        placeholder="예: 30000"
-      />
-    </div>
-
-    <div class="field">
-      <label for="years">약정 (년)</label>
-      <input
-        id="years"
-        type="text"
-        inputmode="numeric"
-        pattern="[0-9]*"
-        placeholder="예: 5"
-      />
-    </div>
-
-    <div class="field">
-      <label for="lifePlan">라이프 제휴</label>
-      <select id="lifePlan">
-        <option value="none">미적용</option>
-        <option value="599">라이프 599</option>
-        <option value="429">라이프 429</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="lifeCount">라이프 구좌 수</label>
-      <input
-        id="lifeCount"
-        type="text"
-        inputmode="numeric"
-        pattern="[0-9]*"
-        placeholder="예: 1 또는 2"
-      />
-      <div id="errorMsg" class="error"></div>
-    </div>
-
-    <div class="field">
-      <label for="freeCount">렌탈료 면제 횟수 (회)</label>
-      <input
-        id="freeCount"
-        type="text"
-        inputmode="numeric"
-        pattern="[0-9]*"
-        placeholder="예: 3"
-      />
-    </div>
-
-    <div class="result">
-      <div class="result-header">
-        <span class="pill">계산 결과</span>
-      </div>
-
-      <div class="result-row">
-        <span>월 납부액 (라이프 제휴 적용 후)</span>
-        <span id="monthlyAfterLife">-</span>
-      </div>
-      <div class="result-row">
-        <span>렌탈 총액</span>
-        <span id="totalRentalText">-</span>
-      </div>
-      <div class="result-row">
-        <span>총 할인 금액</span>
-        <span id="totalDiscountText">-</span>
-      </div>
-
-      <!-- 총 할인 금액 아래에 할인 설명 배치 -->
-      <div class="discount-detail">
-        <div id="lifeDetail">라이프 제휴: -</div>
-        <div id="freeDetail">렌탈료 면제: -</div>
-      </div>
-
-      <div class="result-row strong">
-        <span>실납부 총액</span>
-        <span id="finalTotalText">-</span>
-      </div>
-
-      <div class="hint">
-        <div class="hint-line">
-          <strong>
-            설치월 렌탈료는 설치일자 및 프로모션 조건에 따라 일할 계산·면제 기준이 달라져,
-            실제 청구 금액과 본 견적 간에 차이가 발생할 수 있습니다.
-          </strong>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script>
     const monthlyFeeInput = document.getElementById("monthlyFee");
     const yearsInput = document.getElementById("years");
-    const lifePlanSelect = document.getElementById("lifePlan");
-    const lifeCountInput = document.getElementById("lifeCount");
+    const life1Select = document.getElementById("life1");
+    const life2Select = document.getElementById("life2");
     const freeCountInput = document.getElementById("freeCount");
 
+    const baseMonthlyText = document.getElementById("baseMonthly");
+    const monthlyDiscountSumText = document.getElementById("monthlyDiscountSum");
+    const monthlyLifeLines = document.getElementById("monthlyLifeLines");
     const monthlyAfterLifeText = document.getElementById("monthlyAfterLife");
-    const totalRentalText = document.getElementById("totalRentalText");
-    const totalDiscountText = document.getElementById("totalDiscountText");
+
+    const totalSection = document.getElementById("totalSection");
+    const rentalFormulaText = document.getElementById("rentalFormulaText");
+    const rentalFormulaResult = document.getElementById("rentalFormulaResult");
+    const totalDiscountSum = document.getElementById("totalDiscountSum");
+    const totalDiscountDetail = document.getElementById("totalDiscountDetail");
     const finalTotalText = document.getElementById("finalTotalText");
+    const negativeNotice = document.getElementById("negativeNotice");
 
-    const lifeDetail = document.getElementById("lifeDetail");
-    const freeDetail = document.getElementById("freeDetail");
     const errorMsg = document.getElementById("errorMsg");
+    const extraBox = document.getElementById("extraBox");
 
-    // 라이프 제휴 설정
-    // 599: 월 22,500원 × 60회
-    // 429: 월 15,000원 × 60회
     const LIFE_CONFIG = {
-      "599": { monthly: 22500, times: 60 },
-      "429": { monthly: 15000, times: 60 }
+      "599": { monthly: 22500, times: 60, name: "라이프 599" },
+      "429": { monthly: 15000, times: 60, name: "라이프 429" },
     };
 
     function formatKRW(value) {
@@ -250,126 +31,267 @@
       return value.toLocaleString("ko-KR") + "원";
     }
 
-    function calculate() {
-      const monthlyFee = Number((monthlyFeeInput.value || "").replace(/[^0-9]/g, "")) || 0;
-      const years = Number((yearsInput.value || "").replace(/[^0-9]/g, "")) || 0;
-      const lifePlan = lifePlanSelect.value;
-      const freeCount = Number((freeCountInput.value || "").replace(/[^0-9]/g, "")) || 0;
-      const lifeCountRawStr = (lifeCountInput.value || "").trim();
+    function formatAbsKRW(value) {
+      return Math.abs(value).toLocaleString("ko-KR") + "원";
+    }
 
-      let errorText = "";
+    function parseNumber(el) {
+      const raw = (el.value || "").replace(/[^0-9]/g, "");
+      return raw ? Number(raw) : 0;
+    }
+
+    function resetResults() {
+      baseMonthlyText.textContent = "-";
+      monthlyDiscountSumText.textContent = "-";
+      monthlyDiscountSumText.classList.remove("negative");
+      monthlyLifeLines.innerHTML = "";
+      monthlyAfterLifeText.textContent = "-";
+
+      rentalFormulaText.textContent = "";
+      rentalFormulaResult.textContent = "";
+      totalDiscountSum.textContent = "-";
+      totalDiscountDetail.innerHTML = "";
+      finalTotalText.textContent = "-";
+      totalSection.style.display = "none";
+      negativeNotice.style.display = "none";
+    }
+
+    function calculate() {
+      const monthlyFee = parseNumber(monthlyFeeInput);
+      const years = parseNumber(yearsInput);
+      const freeCount = parseNumber(freeCountInput);
+      const life1 = life1Select.value;
+      const life2 = life2Select.value;
+
+      let error = "";
 
       if (!monthlyFee || !years) {
-        monthlyAfterLifeText.textContent = "-";
-        totalRentalText.textContent = "-";
-        totalDiscountText.textContent = "-";
-        finalTotalText.textContent = "-";
-        lifeDetail.textContent = "라이프 제휴: -";
-        freeDetail.textContent = "렌탈료 면제: -";
+        resetResults();
         errorMsg.textContent = "";
         return;
       }
 
-      // 라이프 적용 여부, 구좌 수 결정
-      let appliedLifePlan = lifePlan;
-      let appliedLifeCount = 0;
+      // 기본 월 렌탈료
+      baseMonthlyText.textContent = formatKRW(monthlyFee);
 
-      // 약정 5년 미만이면 라이프 불가
-      if (years < 5 && (lifePlan === "599" || lifePlan === "429")) {
-        errorText += "약정 5년 미만 상품은 라이프 제휴(599/429)를 이용할 수 없습니다.";
-        appliedLifePlan = "none";
-        appliedLifeCount = 0;
-      } else if (lifePlan === "599" || lifePlan === "429") {
-        // 라이프 제휴 선택된 경우에만 구좌 수 체크
-        if (lifeCountRawStr === "") {
-          // 미입력 시 기본 1구좌로 간주
-          appliedLifeCount = 1;
-        } else {
-          const parsedCount = Number(lifeCountRawStr.replace(/[^0-9]/g, ""));
-          if (parsedCount === 1 || parsedCount === 2) {
-            appliedLifeCount = parsedCount;
-          } else {
-            // 1, 2가 아닌 경우: 경고 + 입력값 삭제 + 라이프 미적용
-            errorText +=
-              (errorText ? "\n" : "") +
-              "1개의 제품에는 최대 2구좌까지 라이프 제휴가 가능합니다.";
-            lifeCountInput.value = "";
-            appliedLifePlan = "none";
-            appliedLifeCount = 0;
-          }
+      // 라이프 제휴 계산
+      let life1Monthly = 0, life1Total = 0, life1Name = "";
+      let life2Monthly = 0, life2Total = 0, life2Name = "";
+
+      const lifeSelected = [];
+      if (life1 === "599" || life1 === "429") lifeSelected.push("life1");
+      if (life2 === "599" || life2 === "429") lifeSelected.push("life2");
+
+      // 5년 미만 제휴 제한
+      if (years < 5 && lifeSelected.length > 0) {
+        error = "약정 5년 미만 상품은 라이프 제휴(599/429)를 이용할 수 없습니다.";
+      } else {
+        if (life1 === "599" || life1 === "429") {
+          const cfg = LIFE_CONFIG[life1];
+          life1Monthly = cfg.monthly;
+          life1Total = cfg.monthly * cfg.times;
+          life1Name = cfg.name;
+        }
+        if (life2 === "599" || life2 === "429") {
+          const cfg = LIFE_CONFIG[life2];
+          life2Monthly = cfg.monthly;
+          life2Total = cfg.monthly * cfg.times;
+          life2Name = cfg.name;
+        }
+
+        const lifeMonthlySumTmp = life1Monthly + life2Monthly;
+        if (lifeMonthlySumTmp > 0 && monthlyFee <= lifeMonthlySumTmp) {
+          const msg = `월 렌탈료가 라이프 제휴 월 할인액 합산(${formatKRW(
+            lifeMonthlySumTmp
+          )}) 이하인 경우 라이프 제휴를 적용할 수 없습니다.`;
+          error = error ? error + "\n" + msg : msg;
+          life1Monthly = life2Monthly = 0;
+          life1Total = life2Total = 0;
+          life1Name = life2Name = "";
         }
       }
 
-      // 라이프 제휴 할인 계산
-      let lifeMonthlyDiscount = 0;
-      let lifeTotalDiscount = 0;
-      let lifeDetailText = "라이프 제휴: 미적용";
+      const lifeMonthlySum = life1Monthly + life2Monthly;
+      const lifeTotalDiscount = life1Total + life2Total;
 
-      if (appliedLifePlan === "599" || appliedLifePlan === "429") {
-        const cfg = LIFE_CONFIG[appliedLifePlan];
-        lifeMonthlyDiscount = cfg.monthly * appliedLifeCount;
-
-        // 월 렌탈료 vs 라이프 월 할인 합산 검증
-        if (monthlyFee <= lifeMonthlyDiscount) {
-          const msg =
-            `월 렌탈료가 라이프 제휴 월 할인액 합산(${formatKRW(
-              lifeMonthlyDiscount
-            )}) 이하인 경우 ` + `라이프 제휴를 적용할 수 없습니다.`;
-          errorText += (errorText ? "\n" : "") + msg;
-
-          appliedLifePlan = "none";
-          appliedLifeCount = 0;
-          lifeMonthlyDiscount = 0;
-          lifeTotalDiscount = 0;
-          lifeDetailText = "라이프 제휴: 미적용";
-        } else {
-          lifeTotalDiscount = cfg.monthly * cfg.times * appliedLifeCount;
-          lifeDetailText =
-            `라이프 ${appliedLifePlan} ${appliedLifeCount}구좌 적용: ` +
-            `${formatKRW(lifeTotalDiscount)} ` +
-            `(${formatKRW(cfg.monthly)} × ${cfg.times}회 × ${appliedLifeCount}구좌)`;
-        }
+      // 위 박스: 할인 적용(월)
+      if (lifeMonthlySum > 0) {
+        monthlyDiscountSumText.textContent = "-" + formatAbsKRW(lifeMonthlySum);
+        monthlyDiscountSumText.classList.add("negative");
+      } else {
+        monthlyDiscountSumText.textContent = "-";
+        monthlyDiscountSumText.classList.remove("negative");
       }
 
-      // 월 납부액 (라이프 제휴 적용 후)
-      let monthlyAfterLife = monthlyFee - lifeMonthlyDiscount;
+      const monthlyDetail = [];
+      if (life1Monthly > 0) {
+        monthlyDetail.push(
+          `<div class="discount-sub-line"><span>라이프 제휴 1 (${life1Name})</span><span class="negative">-${formatAbsKRW(
+            life1Monthly
+          )}</span></div>`
+        );
+      }
+      if (life2Monthly > 0) {
+        monthlyDetail.push(
+          `<div class="discount-sub-line"><span>라이프 제휴 2 (${life2Name})</span><span class="negative">-${formatAbsKRW(
+            life2Monthly
+          )}</span></div>`
+        );
+      }
+      monthlyLifeLines.innerHTML = monthlyDetail.join("");
+
+      // 할인 적용 월 납부액
+      let monthlyAfterLife = monthlyFee - lifeMonthlySum;
       if (monthlyAfterLife < 0) monthlyAfterLife = 0;
+      monthlyAfterLifeText.textContent = formatKRW(monthlyAfterLife);
 
-      // 렌탈 총액
-      const totalRental = monthlyFee * years * 12;
-
-      // 렌탈료 면제 할인
-      let freeDiscount = 0;
-      let freeDetailText = "렌탈료 면제: 미적용";
-      if (freeCount > 0) {
-        freeDiscount = monthlyFee * freeCount;
-        freeDetailText =
-          `렌탈료 면제: ${formatKRW(freeDiscount)} ` +
-          `(${formatKRW(monthlyFee)} × ${freeCount}회)`;
+      // 아래 박스는 면제 입력 있을 때만
+      if (!freeCount) {
+        totalSection.style.display = "none";
+        rentalFormulaText.textContent = "";
+        rentalFormulaResult.textContent = "";
+        totalDiscountSum.textContent = "-";
+        totalDiscountDetail.innerHTML = "";
+        finalTotalText.textContent = "-";
+        negativeNotice.style.display = "none";
+        errorMsg.textContent = error;
+        return;
       }
 
-      // 총 할인 금액
+      const months = years * 12;
+      const totalRental = monthlyFee * months;
+      const freeDiscount = monthlyFee * freeCount;
       const totalDiscount = lifeTotalDiscount + freeDiscount;
-
-      // 실납부 총액 (음수도 그대로 표시)
       const finalTotal = totalRental - totalDiscount;
 
-      // 화면 표시
-      monthlyAfterLifeText.textContent = formatKRW(Math.round(monthlyAfterLife));
-      totalRentalText.textContent = formatKRW(Math.round(totalRental));
-      totalDiscountText.textContent = formatKRW(Math.round(totalDiscount));
-      finalTotalText.textContent = formatKRW(Math.round(finalTotal));
+      // 렌탈 총액: 계산식 + 결과값 분리
+      rentalFormulaText.textContent =
+        `월 렌탈료 ${formatKRW(monthlyFee)} × 약정 ${months}개월 =`;
+      rentalFormulaResult.textContent = formatKRW(totalRental);
 
-      lifeDetail.textContent = lifeDetailText;
-      freeDetail.textContent = freeDetailText;
-      errorMsg.textContent = errorText;
+      // 할인 적용 (합계)
+      if (totalDiscount > 0) {
+        totalDiscountSum.textContent = "-" + formatAbsKRW(totalDiscount);
+      } else {
+        totalDiscountSum.textContent = "-";
+      }
+
+      // 할인 상세 내역
+      const lines = [];
+      if (life1Total > 0) {
+        const cfg = LIFE_CONFIG[life1];
+        lines.push(
+          `<div class="total-sub-line negative"><span>라이프 제휴 1 (${life1Name})</span><span>-${formatAbsKRW(
+            cfg.monthly
+          )} × ${cfg.times}회 = -${formatAbsKRW(life1Total)}</span></div>`
+        );
+      }
+      if (life2Total > 0) {
+        const cfg = LIFE_CONFIG[life2];
+        lines.push(
+          `<div class="total-sub-line negative"><span>라이프 제휴 2 (${life2Name})</span><span>-${formatAbsKRW(
+            cfg.monthly
+          )} × ${cfg.times}회 = -${formatAbsKRW(life2Total)}</span></div>`
+        );
+      }
+      if (freeDiscount > 0) {
+        lines.push(
+          `<div class="total-sub-line negative"><span>렌탈료 면제</span><span>-${formatAbsKRW(
+            monthlyFee
+          )} × ${freeCount}회 = -${formatAbsKRW(freeDiscount)}</span></div>`
+        );
+      }
+      totalDiscountDetail.innerHTML = lines.join("");
+
+      // 실 납부 총액
+      finalTotalText.textContent = formatKRW(finalTotal);
+      totalSection.style.display = "block";
+
+      if (finalTotal < 0) {
+        negativeNotice.style.display = "block";
+      } else {
+        negativeNotice.style.display = "none";
+      }
+
+      errorMsg.textContent = error;
     }
 
-    monthlyFeeInput.addEventListener("input", calculate);
-    yearsInput.addEventListener("input", calculate);
-    lifePlanSelect.addEventListener("change", calculate);
-    lifeCountInput.addEventListener("input", calculate);
-    freeCountInput.addEventListener("input", calculate);
+    // 입력 이벤트 핸들러들
+
+    // 월 렌탈료: 쉼표 + '원'
+    monthlyFeeInput.addEventListener("focus", () => {
+      const raw = monthlyFeeInput.value.replace(/[^0-9]/g, "");
+      if (!raw) {
+        monthlyFeeInput.value = "";
+        return;
+      }
+      monthlyFeeInput.value = Number(raw).toLocaleString("ko-KR");
+    });
+
+    monthlyFeeInput.addEventListener("input", () => {
+      const raw = monthlyFeeInput.value.replace(/[^0-9]/g, "");
+      if (!raw) {
+        monthlyFeeInput.value = "";
+      } else {
+        monthlyFeeInput.value = Number(raw).toLocaleString("ko-KR");
+      }
+      calculate();
+    });
+
+    monthlyFeeInput.addEventListener("blur", () => {
+      const raw = monthlyFeeInput.value.replace(/[^0-9]/g, "");
+      if (!raw) {
+        monthlyFeeInput.value = "";
+        calculate();
+        return;
+      }
+      monthlyFeeInput.value =
+        Number(raw).toLocaleString("ko-KR") + "원";
+      calculate();
+    });
+
+    // 약정 (년): 숫자만 + '년'
+    yearsInput.addEventListener("focus", () => {
+      const raw = yearsInput.value.replace(/[^0-9]/g, "");
+      yearsInput.value = raw || "";
+    });
+
+    yearsInput.addEventListener("input", () => {
+      const raw = yearsInput.value.replace(/[^0-9]/g, "");
+      yearsInput.value = raw || "";
+      calculate();
+    });
+
+    yearsInput.addEventListener("blur", () => {
+      const raw = yearsInput.value.replace(/[^0-9]/g, "");
+      if (!raw) {
+        yearsInput.value = "";
+        calculate();
+        return;
+      }
+      yearsInput.value = Number(raw) + "년";
+      calculate();
+    });
+
+    life1Select.addEventListener("change", calculate);
+    life2Select.addEventListener("change", calculate);
+    freeCountInput.addEventListener("input", () => {
+      const raw = freeCountInput.value.replace(/[^0-9]/g, "");
+      freeCountInput.value = raw || "";
+      calculate();
+    });
+
+    // 추가 옵션 토글 (면제 입력 영역)
+    const extraTitle = document.querySelector(
+      '.section-title[style*="cursor:pointer"]'
+    );
+    extraTitle.addEventListener("click", () => {
+      if (extraBox.style.display === "none" || !extraBox.style.display) {
+        extraBox.style.display = "block";
+      } else {
+        extraBox.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
