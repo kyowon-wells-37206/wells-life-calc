@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>웰스 라이프 제휴 렌탈 견적 계산기</title>
+
   <style>
     :root {
       --wells-blue: #005776;
@@ -87,19 +88,17 @@
       box-shadow: 0 0 0 2px rgba(45, 204, 211, 0.3);
     }
 
-    /* 결과 제목 */
     .section-title {
       margin-top: 18px;
       font-size: 14px;
       font-weight: 700;
       color: var(--wells-blue);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      cursor: pointer;
     }
+
+    /* ◆ 제거 */
     .section-title::before {
-      content: "◆";
-      font-size: 11px;
+      content: "";
     }
 
     /* 위 박스 */
@@ -150,7 +149,12 @@
       color: var(--danger);
     }
 
-    /* 아래박스 */
+    /* 라이프 제휴 상세 왼쪽 텍스트도 빨간색 */
+    .discount-sub-line span:first-child {
+      color: var(--danger);
+    }
+
+    /* 아래 박스 */
     .total-box {
       margin-top: 8px;
       background: #f6f9fb;
@@ -179,13 +183,6 @@
       font-size: 18px;
       font-weight: 700;
       color: var(--text-dark);
-    }
-
-    .total-line {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin-bottom: 4px;
     }
 
     .total-main-label {
@@ -238,6 +235,7 @@
       gap: 8px;
       justify-content: center;
     }
+
     .banner-link {
       flex: 1 1 48%;
       min-width: 150px;
@@ -250,10 +248,12 @@
       color: white;
       font-weight: 600;
     }
+
     .banner-link.secondary {
       background: var(--wells-light-blue);
       color: #003c47;
     }
+
     .banner-link.full {
       flex: 1 1 100%;
     }
@@ -270,10 +270,11 @@
 <body>
   <div class="wrap">
     <div class="card">
+
       <h1 class="title">렌탈 견적 계산기</h1>
       <p class="subtitle">월 렌탈료 · 약정 · 라이프 제휴 할인 적용 견적 계산</p>
 
-      <!-- 입력 영역 -->
+      <!-- 입력 -->
       <div class="form-row">
         <div class="label-block">월 렌탈료</div>
         <input id="monthlyFee" type="text" placeholder="예: 30,000" inputmode="numeric" />
@@ -302,11 +303,11 @@
         </select>
       </div>
 
-      <!-- 오류 메시지 (라이프 제휴 2 바로 아래 표시) -->
+      <!-- 오류 메시지 (라이프제휴 아래로 이동) -->
       <div id="errorMsg"></div>
 
-      <!-- 추가옵션 -->
-      <div class="section-title" style="cursor:pointer;" onclick="extraBox.classList.toggle('open')">
+      <!-- 추가 옵션 -->
+      <div class="section-title" onclick="extraBox.style.display = extraBox.style.display==='block'?'none':'block'">
         + 추가 옵션
       </div>
 
@@ -317,8 +318,9 @@
         </div>
       </div>
 
-      <!-- 계산결과(위박스) -->
+      <!-- 계산결과 위박스 -->
       <div class="section-title">계산 결과</div>
+
       <div class="result-box">
         <div class="result-row main-row">
           <div class="result-label main-label">월 렌탈료</div>
@@ -327,7 +329,7 @@
 
         <div class="result-row main-row">
           <div class="result-label main-label">할인 적용</div>
-          <div class="result-value" id="monthlyDiscountSum">-</div>
+          <div class="result-value negative" id="monthlyDiscountSum">-</div>
         </div>
 
         <div id="monthlyLifeLines" class="discount-sub"></div>
@@ -338,11 +340,12 @@
         </div>
       </div>
 
-      <!-- 계산결과 (아래박스: 면제 적용 시만 표시) -->
+      <!-- 아래박스 (면제 있을 경우만 출력) -->
       <div id="totalSection" style="display:none;">
         <div class="section-title">계산 결과</div>
 
         <div class="total-box">
+
           <!-- 렌탈 총액 -->
           <div class="total-title">
             <span>렌탈 총액</span>
@@ -352,7 +355,7 @@
             </span>
           </div>
 
-          <!-- 할인 적용 합계 -->
+          <!-- 할인 적용 (합계) -->
           <div class="total-line">
             <span class="total-main-label">할인 적용 (합계)</span>
             <span class="total-main-value" id="totalDiscountSum">-</span>
@@ -360,7 +363,6 @@
 
           <div id="totalDiscountDetail" class="total-sub"></div>
 
-          <!-- 실 납부 총액 -->
           <div class="total-strong">
             <span>실 납부 총액</span>
             <span id="finalTotalText">-</span>
@@ -369,6 +371,7 @@
           <div id="negativeNotice" class="negative-notice">
             잔액은 사용하시는 다른 제품에 전금하시거나 고객센터를 통해 환불받으실 수 있습니다.
           </div>
+
         </div>
       </div>
 
@@ -378,9 +381,11 @@
         <a class="banner-link" href="https://www.kyowonwells.com/Benefit/Discount/Card" target="_blank">웰스 제휴카드 확인</a>
         <a class="banner-link" href="https://www.kyowonlife.co.kr/Benefit/CardList" target="_blank">라이프 제휴카드 확인</a>
       </div>
+
     </div>
   </div>
-  <script>
+
+    <script>
     const monthlyFeeInput = document.getElementById("monthlyFee");
     const yearsInput = document.getElementById("years");
     const life1Select = document.getElementById("life1");
@@ -405,7 +410,7 @@
 
     const LIFE_CONFIG = {
       "599": { monthly: 22500, times: 60, name: "라이프 599" },
-      "429": { monthly: 15000, times: 60, name: "라이프 429" },
+      "429": { monthly: 15000, times: 60, name: "라이프 429" }
     };
 
     function formatKRW(value) {
@@ -456,7 +461,7 @@
       // 기본 월 렌탈료
       baseMonthlyText.textContent = formatKRW(monthlyFee);
 
-      // 라이프 제휴 계산
+      // 라이프 제휴 설정
       let life1Monthly = 0, life1Total = 0, life1Name = "";
       let life2Monthly = 0, life2Total = 0, life2Name = "";
 
@@ -482,11 +487,14 @@
         }
 
         const lifeMonthlySumTmp = life1Monthly + life2Monthly;
+
         if (lifeMonthlySumTmp > 0 && monthlyFee <= lifeMonthlySumTmp) {
           const msg = `월 렌탈료가 라이프 제휴 월 할인액 합산(${formatKRW(
             lifeMonthlySumTmp
           )}) 이하인 경우 라이프 제휴를 적용할 수 없습니다.`;
+
           error = error ? error + "\n" + msg : msg;
+
           life1Monthly = life2Monthly = 0;
           life1Total = life2Total = 0;
           life1Name = life2Name = "";
@@ -496,7 +504,7 @@
       const lifeMonthlySum = life1Monthly + life2Monthly;
       const lifeTotalDiscount = life1Total + life2Total;
 
-      // 위 박스: 할인 적용(월)
+      // 할인 적용 (월)
       if (lifeMonthlySum > 0) {
         monthlyDiscountSumText.textContent = "-" + formatAbsKRW(lifeMonthlySum);
         monthlyDiscountSumText.classList.add("negative");
@@ -506,6 +514,7 @@
       }
 
       const monthlyDetail = [];
+
       if (life1Monthly > 0) {
         monthlyDetail.push(
           `<div class="discount-sub-line"><span>라이프 제휴 1 (${life1Name})</span><span class="negative">-${formatAbsKRW(
@@ -513,6 +522,7 @@
           )}</span></div>`
         );
       }
+
       if (life2Monthly > 0) {
         monthlyDetail.push(
           `<div class="discount-sub-line"><span>라이프 제휴 2 (${life2Name})</span><span class="negative">-${formatAbsKRW(
@@ -520,75 +530,74 @@
           )}</span></div>`
         );
       }
+
       monthlyLifeLines.innerHTML = monthlyDetail.join("");
 
-      // 할인 적용 월 납부액
+      // 할인 적용 후 월 납부액
       let monthlyAfterLife = monthlyFee - lifeMonthlySum;
       if (monthlyAfterLife < 0) monthlyAfterLife = 0;
       monthlyAfterLifeText.textContent = formatKRW(monthlyAfterLife);
 
-      // 아래 박스는 면제 입력 있을 때만
+      // 면제 없으면 아래박스 숨김
       if (!freeCount) {
         totalSection.style.display = "none";
-        rentalFormulaText.textContent = "";
-        rentalFormulaResult.textContent = "";
-        totalDiscountSum.textContent = "-";
-        totalDiscountDetail.innerHTML = "";
-        finalTotalText.textContent = "-";
-        negativeNotice.style.display = "none";
         errorMsg.textContent = error;
         return;
       }
 
+      // 아래박스 계산
       const months = years * 12;
       const totalRental = monthlyFee * months;
       const freeDiscount = monthlyFee * freeCount;
       const totalDiscount = lifeTotalDiscount + freeDiscount;
       const finalTotal = totalRental - totalDiscount;
 
-      // 렌탈 총액: 계산식 + 결과값 분리
+      // 렌탈 총액 계산식
       rentalFormulaText.textContent =
         `월 렌탈료 ${formatKRW(monthlyFee)} × 약정 ${months}개월 =`;
       rentalFormulaResult.textContent = formatKRW(totalRental);
 
-      // 할인 적용 (합계)
+      // 할인 적용(합계)
       if (totalDiscount > 0) {
         totalDiscountSum.textContent = "-" + formatAbsKRW(totalDiscount);
       } else {
         totalDiscountSum.textContent = "-";
       }
 
-      // 할인 상세 내역
-      const lines = [];
+      const detailLines = [];
+
       if (life1Total > 0) {
         const cfg = LIFE_CONFIG[life1];
-        lines.push(
+        detailLines.push(
           `<div class="total-sub-line negative"><span>라이프 제휴 1 (${life1Name})</span><span>-${formatAbsKRW(
             cfg.monthly
           )} × ${cfg.times}회 = -${formatAbsKRW(life1Total)}</span></div>`
         );
       }
+
       if (life2Total > 0) {
         const cfg = LIFE_CONFIG[life2];
-        lines.push(
+        detailLines.push(
           `<div class="total-sub-line negative"><span>라이프 제휴 2 (${life2Name})</span><span>-${formatAbsKRW(
             cfg.monthly
           )} × ${cfg.times}회 = -${formatAbsKRW(life2Total)}</span></div>`
         );
       }
+
       if (freeDiscount > 0) {
-        lines.push(
+        detailLines.push(
           `<div class="total-sub-line negative"><span>렌탈료 면제</span><span>-${formatAbsKRW(
             monthlyFee
           )} × ${freeCount}회 = -${formatAbsKRW(freeDiscount)}</span></div>`
         );
       }
-      totalDiscountDetail.innerHTML = lines.join("");
 
-      // 실 납부 총액
+      totalDiscountDetail.innerHTML = detailLines.join("");
+
       finalTotalText.textContent = formatKRW(finalTotal);
       totalSection.style.display = "block";
 
+      // 음수 시 안내문 노출
       if (finalTotal < 0) {
         negativeNotice.style.display = "block";
       } else {
@@ -598,25 +607,17 @@
       errorMsg.textContent = error;
     }
 
-    // 입력 이벤트 핸들러들
+    // ====== 입력 이벤트 ======
 
-    // 월 렌탈료: 쉼표 + '원'
+    // 월 렌탈료
     monthlyFeeInput.addEventListener("focus", () => {
       const raw = monthlyFeeInput.value.replace(/[^0-9]/g, "");
-      if (!raw) {
-        monthlyFeeInput.value = "";
-        return;
-      }
-      monthlyFeeInput.value = Number(raw).toLocaleString("ko-KR");
+      monthlyFeeInput.value = raw || "";
     });
 
     monthlyFeeInput.addEventListener("input", () => {
       const raw = monthlyFeeInput.value.replace(/[^0-9]/g, "");
-      if (!raw) {
-        monthlyFeeInput.value = "";
-      } else {
-        monthlyFeeInput.value = Number(raw).toLocaleString("ko-KR");
-      }
+      monthlyFeeInput.value = raw ? Number(raw).toLocaleString("ko-KR") : "";
       calculate();
     });
 
@@ -627,12 +628,11 @@
         calculate();
         return;
       }
-      monthlyFeeInput.value =
-        Number(raw).toLocaleString("ko-KR") + "원";
+      monthlyFeeInput.value = Number(raw).toLocaleString("ko-KR") + "원";
       calculate();
     });
 
-    // 약정 (년): 숫자만 + '년'
+    // 약정
     yearsInput.addEventListener("focus", () => {
       const raw = yearsInput.value.replace(/[^0-9]/g, "");
       yearsInput.value = raw || "";
@@ -646,34 +646,19 @@
 
     yearsInput.addEventListener("blur", () => {
       const raw = yearsInput.value.replace(/[^0-9]/g, "");
-      if (!raw) {
-        yearsInput.value = "";
-        calculate();
-        return;
-      }
-      yearsInput.value = Number(raw) + "년";
+      yearsInput.value = raw ? Number(raw) + "년" : "";
       calculate();
     });
 
     life1Select.addEventListener("change", calculate);
     life2Select.addEventListener("change", calculate);
+
     freeCountInput.addEventListener("input", () => {
       const raw = freeCountInput.value.replace(/[^0-9]/g, "");
       freeCountInput.value = raw || "";
       calculate();
     });
-
-    // 추가 옵션 토글 (면제 입력 영역)
-    const extraTitle = document.querySelector(
-      '.section-title[style*="cursor:pointer"]'
-    );
-    extraTitle.addEventListener("click", () => {
-      if (extraBox.style.display === "none" || !extraBox.style.display) {
-        extraBox.style.display = "block";
-      } else {
-        extraBox.style.display = "none";
-      }
-    });
   </script>
+
 </body>
 </html>
