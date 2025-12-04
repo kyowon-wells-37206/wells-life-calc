@@ -124,23 +124,24 @@
       font-size: 14px;
     }
 
+    /* 할인 적용 월 납부액 라벨만 16px */
+    .strong-label {
+      font-size: 16px;
+    }
+
     .result-value {
       font-weight: 600;
       font-size: 14px;
       color: var(--text-dark);
     }
 
-    /* 월렌탈료 / 할인적용 */
+    /* 월렌탈료 / 할인적용 결과값 */
     .result-row.main-row .result-value {
       font-size: 16px;
       font-weight: 700;
     }
 
-    .special-label {
-      font-size: 16px !important;
-    }
-
-    /* 🔵 할인 적용 월 납부액 결과값 18px */
+    /* 할인 적용 월 납부액 결과값 18px */
     .result-row.strong .result-value {
       font-size: 18px;
       font-weight: 700;
@@ -228,7 +229,6 @@
       margin-bottom: 2px;
     }
 
-    /* 🔵 실 납부 총액 결과값 18px + 중앙정렬 */
     .total-strong {
       margin-top: 10px;
       padding-top: 10px;
@@ -361,11 +361,10 @@
 
         <div id="monthlyLifeLines" class="discount-sub"></div>
 
-        <!-- 🔵 위 박스 점선 구분선 -->
         <div class="result-divider"></div>
 
         <div class="result-row strong">
-          <div class="result-label main-label special-label">할인 적용 월 납부액</div>
+          <div class="result-label main-label strong-label">할인 적용 월 납부액</div>
           <div class="result-value" id="monthlyAfterLife">-</div>
         </div>
       </div>
@@ -505,16 +504,16 @@
         error = "약정 5년 미만 상품은 라이프 제휴(599/429)를 이용할 수 없습니다.";
       } else {
         if (life1 === "599" || life1 === "429") {
-          const cfg = LIFE_CONFIG[life1];
-          life1Monthly = cfg.monthly;
-          life1Total = cfg.monthly * cfg.times;
-          life1Name = cfg.name;
+          const cfg1 = LIFE_CONFIG[life1];
+          life1Monthly = cfg1.monthly;
+          life1Total = cfg1.monthly * cfg1.times;
+          life1Name = cfg1.name;
         }
         if (life2 === "599" || life2 === "429") {
-          const cfg = LIFE_CONFIG[life2];
-          life2Monthly = cfg.monthly;
-          life2Total = cfg.monthly * cfg.times;
-          life2Name = cfg.name;
+          const cfg2 = LIFE_CONFIG[life2];
+          life2Monthly = cfg2.monthly;
+          life2Total = cfg2.monthly * cfg2.times;
+          life2Name = cfg2.name;
         }
 
         const lifeMonthlySumTmp = life1Monthly + life2Monthly;
@@ -544,14 +543,14 @@
       const monthlyDetail = [];
       if (life1Monthly > 0) {
         monthlyDetail.push(
-          `<div class="discount-sub-line"><span>라이프 제휴 1 (${life1Name})</span><span class="negative">-${formatAbsKRW(
+          `<div class="discount-sub-line"><span>${life1Name}</span><span class="negative">-${formatAbsKRW(
             life1Monthly
           )}</span></div>`
         );
       }
       if (life2Monthly > 0) {
         monthlyDetail.push(
-          `<div class="discount-sub-line"><span>라이프 제휴 2 (${life2Name})</span><span class="negative">-${formatAbsKRW(
+          `<div class="discount-sub-line"><span>${life2Name}</span><span class="negative">-${formatAbsKRW(
             life2Monthly
           )}</span></div>`
         );
@@ -584,7 +583,7 @@
 
       // 렌탈 총액: 계산식 + 결과값 분리
       rentalFormulaText.textContent =
-        `월 렌탈료 ${formatKRW(monthlyFee)} × 약정 ${months}개월 =`;
+        `월 ${formatKRW(monthlyFee)} × ${months}개월 =`;
       rentalFormulaResult.textContent = formatKRW(totalRental);
 
       // 할인 적용 (합계)
@@ -597,19 +596,19 @@
       // 할인 상세
       const lines = [];
       if (life1Total > 0) {
-        const cfg = LIFE_CONFIG[life1];
+        const cfg1 = LIFE_CONFIG[life1];
         lines.push(
-          `<div class="total-sub-line negative"><span>라이프 제휴 1 (${life1Name})</span><span>-${formatAbsKRW(
-            cfg.monthly
-          )} × ${cfg.times}회 = -${formatAbsKRW(life1Total)}</span></div>`
+          `<div class="total-sub-line negative"><span>${life1Name}</span><span>-${formatAbsKRW(
+            cfg1.monthly
+          )} × ${cfg1.times}회 = -${formatAbsKRW(life1Total)}</span></div>`
         );
       }
       if (life2Total > 0) {
-        const cfg = LIFE_CONFIG[life2];
+        const cfg2 = LIFE_CONFIG[life2];
         lines.push(
-          `<div class="total-sub-line negative"><span>라이프 제휴 2 (${life2Name})</span><span>-${formatAbsKRW(
-            cfg.monthly
-          )} × ${cfg.times}회 = -${formatAbsKRW(life2Total)}</span></div>`
+          `<div class="total-sub-line negative"><span>${life2Name}</span><span>-${formatAbsKRW(
+            cfg2.monthly
+          )} × ${cfg2.times}회 = -${formatAbsKRW(life2Total)}</span></div>`
         );
       }
       if (freeDiscount > 0) {
@@ -700,5 +699,3 @@
   </script>
 </body>
 </html>
-
-
