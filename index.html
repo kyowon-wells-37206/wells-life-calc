@@ -306,7 +306,7 @@
     <div class="card">
 
       <h1 class="title">렌탈 견적 계산기</h1>
-      <p class="subtitle">월 렌탈료 · 약정 · 라이프 제휴 할인 적용 견적 계산</p>
+      <p class="subtitle">월 렌탈료 · 약정 · 라이프 제휴 지원금 적용 견적 계산</p>
 
       <!-- 입력 -->
       <div class="form-row">
@@ -367,7 +367,7 @@
         </div>
 
         <div class="result-row main-row">
-          <div class="result-label main-label">할인 적용</div>
+          <div class="result-label main-label">지원 혜택</div>
           <div class="result-value negative" id="monthlyDiscountSum">-</div>
         </div>
 
@@ -376,7 +376,7 @@
         <div class="result-divider"></div>
 
         <div class="result-row strong">
-          <div class="result-label main-label strong-label">할인 적용 월 납부액</div>
+          <div class="result-label main-label strong-label">혜택 적용 월 납부액</div>
           <div class="result-value" id="monthlyAfterLife">-</div>
         </div>
       </div>
@@ -396,9 +396,9 @@
             </span>
           </div>
 
-          <!-- 할인 적용 (합계) -->
+          <!-- 혜택택 적용 (합계) -->
           <div class="total-line" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-            <span class="total-main-label">할인 적용 (합계)</span>
+            <span class="total-main-label">혜택 적용 (합계)</span>
             <span class="total-main-value" id="totalDiscountSum">-</span>
           </div>
 
@@ -539,7 +539,7 @@
 
         const lifeMonthlySumTmp = life1Monthly + life2Monthly;
         if (lifeMonthlySumTmp > 0 && monthlyFee <= lifeMonthlySumTmp) {
-          const msg = `월 렌탈료가 라이프 제휴 월 할인액 합산(${formatKRW(
+          const msg = `월 렌탈료가 라이프 제휴 월 지원금 합산(${formatKRW(
             lifeMonthlySumTmp
           )}) 이하인 경우 라이프 제휴를 적용할 수 없습니다.`;
           error = error ? error + "\n" + msg : msg;
@@ -728,6 +728,7 @@
   </script>
 </body>
 </html>
+
 
 
 
