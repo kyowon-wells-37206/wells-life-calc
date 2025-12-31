@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>웰스 라이프 제휴 렌탈 견적 계산기</title>
+  <title>라이프 제휴 렌탈 견적 계산기</title>
 
   <style>
     :root {
@@ -306,7 +306,7 @@
     <div class="card">
 
       <h1 class="title">렌탈 견적 계산기</h1>
-      <p class="subtitle">월 렌탈료 · 약정 · 라이프 제휴 지원금 적용 견적 계산</p>
+      <p class="subtitle">월 렌탈료 · 약정 · 라이프제휴 정기적립금 적용 견적 계산</p>
 
       <!-- 입력 -->
       <div class="form-row">
@@ -352,8 +352,9 @@
         </div>
        
          <div id="freeNote" class="free-note" style="display:none;">
-          설치월 렌탈료는 설치일자에 따라 일할 계산되어,
-          면제 횟수 적용 시 실제 청구 금액과 견적 간에 차이가 발생할 수 있습니다.
+          설치월에는 렌탈료가 일할 계산되어 청구되므로, 면제 횟수에 설치월이 포함된 경우
+          계산기 내 표시된 렌탈료 면제액과 실제 렌탈료 면제액에 차이가 있을 수 있습니다.
+
         </div>  
       </div>
 
@@ -367,7 +368,7 @@
         </div>
 
         <div class="result-row main-row">
-          <div class="result-label main-label">지원 혜택</div>
+          <div class="result-label main-label">혜택 금액</div>
           <div class="result-value negative" id="monthlyDiscountSum">-</div>
         </div>
 
@@ -398,7 +399,7 @@
 
           <!-- 지원 혜택(합계) -->
           <div class="total-line" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-            <span class="total-main-label">지원 혜택(합계)</span>
+            <span class="total-main-label">혜택 금액(합계)</span>
             <span class="total-main-value" id="totalDiscountSum">-</span>
           </div>
 
@@ -406,18 +407,19 @@
 
           <!-- 실 납부 총액 -->
           <div class="total-strong">
-            <span>실 납부 총액</span>
+            <span>예상 실 납부 총액</span>
             <span id="finalTotalText">-</span>
           </div>
 
           <!-- 🔹 설치월 안내 멘트 -->
           <div class="total-info">
-            설치월 렌탈료는 설치일자 및 프로모션 조건에 따라 일할 계산·면제 기준이 달라져,
-            실제 청구 금액과 본 견적 간에 차이가 발생할 수 있습니다.
+            설치월에는 렌탈료가 일할 계산되어 청구되므로, 면제 횟수에 설치월이 포함된 경우
+            계산기 내 표시된 렌탈료 면제액과 실제 렌탈료 면제액에 차이가 있을 수 있습니다.
           </div>
 
           <div id="negativeNotice" class="negative-notice">
-            잔액은 사용하시는 다른 제품에 전금하시거나 고객센터를 통해 환불받으실 수 있습니다.
+            렌탈 약정기간 종료 후에도 라이프제휴 정기적립금이 남아 있는 경우,
+            이를 다른 웰스 상품 렌탈료 결제에 사용하시거나 고객센터를 통해 환불받으실 수 있습니다.
           </div>
 
         </div>
@@ -539,7 +541,7 @@
 
         const lifeMonthlySumTmp = life1Monthly + life2Monthly;
         if (lifeMonthlySumTmp > 0 && monthlyFee <= lifeMonthlySumTmp) {
-          const msg = `월 렌탈료가 라이프 제휴 월 지원금 합산(${formatKRW(
+          const msg = `월 렌탈료가 라이프제휴 월 정기적립금 합산(${formatKRW(
             lifeMonthlySumTmp
           )}) 이하인 경우 라이프 제휴를 적용할 수 없습니다.`;
           error = error ? error + "\n" + msg : msg;
@@ -728,6 +730,7 @@
   </script>
 </body>
 </html>
+
 
 
 
