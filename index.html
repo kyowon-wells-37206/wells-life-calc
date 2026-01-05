@@ -540,10 +540,10 @@
         }
 
         const lifeMonthlySumTmp = life1Monthly + life2Monthly;
-        if (lifeMonthlySumTmp > 0 && monthlyFee <= lifeMonthlySumTmp) {
+        if (lifeMonthlySumTmp > 0 && monthlyFee < lifeMonthlySumTmp) {
           const msg = `월 렌탈료가 라이프제휴 월 정기적립금 합산(${formatKRW(
             lifeMonthlySumTmp
-          )}) 이하인 경우 라이프 제휴를 적용할 수 없습니다.`;
+          )}) 미만인 경우 라이프 제휴를 적용할 수 없습니다.`;
           error = error ? error + "\n" + msg : msg;
           life1Monthly = life2Monthly = 0;
           life1Total = life2Total = 0;
@@ -730,6 +730,7 @@
   </script>
 </body>
 </html>
+
 
 
 
