@@ -583,8 +583,11 @@
       if (monthlyAfterLife < 0) monthlyAfterLife = 0;
       monthlyAfterLifeText.textContent = formatKRW(monthlyAfterLife);
 
-      // 아래 박스는 "면제 횟수" 입력 있을 때만
-      if (!freeCount) {
+      // 아래 박스는 "면제 횟수" 칸에 0 포함 숫자가 입력되었을 때만
+      const freeRaw = (freeCountInput.value || "").replace(/[^0-9]/g, "");
+      const hasFreeInput = freeRaw !== ""; // 0 포함
+
+      if (!hasFreeInput) {
         totalSection.style.display = "none";
         rentalFormulaText.textContent = "";
         rentalFormulaResult.textContent = "";
@@ -592,6 +595,8 @@
         totalDiscountDetail.innerHTML = "";
         finalTotalText.textContent = "-";
         negativeNotice.style.display = "none";
+        installInfo.style.display = "none";
+        lifeNotice3.style.display = "none";
         errorMsg.textContent = error;
         return;
       }
@@ -728,6 +733,7 @@
   </script>
 </body>
 </html>
+
 
 
 
