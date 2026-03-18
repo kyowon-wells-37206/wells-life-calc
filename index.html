@@ -453,7 +453,6 @@
     const finalTotalText = document.getElementById("finalTotalText");
     const negativeNotice = document.getElementById("negativeNotice");
 
-    const installInfo = document.getElementById("installInfo");
     const freeNote = document.getElementById("freeNote");
 
     const errorMsg = document.getElementById("errorMsg");
@@ -595,8 +594,6 @@
         totalDiscountDetail.innerHTML = "";
         finalTotalText.textContent = "-";
         negativeNotice.style.display = "none";
-        installInfo.style.display = "none";
-        lifeNotice3.style.display = "none";
         errorMsg.textContent = error;
         return;
       }
