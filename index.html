@@ -472,6 +472,10 @@
       "429": { monthly: 15000, times: 60, name: "라이프 429" },
     };
 
+    let hasStartedInput = false;
+    let lastResultSignature = "";
+    let lastErrorSignature = "";
+
     function formatKRW(value) {
       if (isNaN(value)) return "-";
       return value.toLocaleString("ko-KR") + "원";
@@ -484,6 +488,107 @@
     function parseNumber(el) {
       const raw = (el.value || "").replace(/[^0-9]/g, "");
       return raw ? Number(raw) : 0;
+    }
+
+    function getFeeRange(value) {
+      if (!value) return "none";
+      if (value < 10000) return "under_10000";
+      if (value < 20000) return "10000_19999";
+      if (value < 30000) return "20000_29999";
+      if (value < 40000) return "30000_39999";
+      if (value < 50000) return "40000_49999";
+      return "50000_plus";
+    }
+
+    function getFreeCountRange(value, hasFreeInput) {
+      if (!hasFreeInput) return "none";
+      if (value === 0) return "0";
+      if (value === 1) return "1";
+      if (value === 2) return "2";
+      if (value === 3) return "3";
+      if (value === 4) return "4";
+      return "5_plus";
+    }
+
+    function getLifeCount(life1, life2) {
+      let count = 0;
+      if (life1 !== "none") count++;
+      if (life2 !== "none") count++;
+      return count;
+    }
+
+    function trackInputStarted() {
+      if (hasStartedInput) return;
+      hasStartedInput = true;
+
+      gtag('event', 'calculator_input_started', {
+        calculator_name: 'wells_life_calc'
+      });
+    }
+
+    function trackLifeOptionChanged(slot, value) {
+      gtag('event', 'life_option_changed', {
+        calculator_name: 'wells_life_calc',
+        slot: slot,
+        selected_value: value
+      });
+    }
+
+    function trackError(errorText, monthlyFee, years, freeCount, life1, life2, hasFreeInput) {
+      const signature = [
+        errorText,
+        monthlyFee,
+        years,
+        freeCount,
+        life1,
+        life2,
+        hasFreeInput
+      ].join('|');
+
+      if (lastErrorSignature === signature) return;
+      lastErrorSignature = signature;
+
+      gtag('event', 'calculator_error', {
+        calculator_name: 'wells_life_calc',
+        error_type: errorText.includes('5년 미만')
+          ? 'under_5_years_life_not_allowed'
+          : errorText.includes('월 정기적립금 합산')
+          ? 'monthly_fee_too_low_for_life'
+          : 'other',
+        fee_range: getFeeRange(monthlyFee),
+        years: years,
+        free_count_range: getFreeCountRange(freeCount, hasFreeInput),
+        life_count: getLifeCount(life1, life2)
+      });
+    }
+
+    function trackResultView(monthlyFee, years, freeCount, life1, life2, monthlyAfterLife, finalTotal, hasFreeInput) {
+      const signature = [
+        monthlyFee,
+        years,
+        freeCount,
+        life1,
+        life2,
+        monthlyAfterLife,
+        finalTotal,
+        hasFreeInput
+      ].join('|');
+
+      if (lastResultSignature === signature) return;
+      lastResultSignature = signature;
+
+      gtag('event', 'calculator_result_view', {
+        calculator_name: 'wells_life_calc',
+        fee_range: getFeeRange(monthlyFee),
+        years: years,
+        free_count_range: getFreeCountRange(freeCount, hasFreeInput),
+        life1: life1,
+        life2: life2,
+        life_count: getLifeCount(life1, life2),
+        monthly_after_life_range: getFeeRange(monthlyAfterLife),
+        total_section_opened: hasFreeInput ? 'yes' : 'no',
+        final_total_negative: finalTotal < 0 ? 'yes' : 'no'
+      });
     }
 
     function resetResults() {
@@ -603,6 +708,11 @@
         totalDiscountDetail.innerHTML = "";
         finalTotalText.textContent = "-";
         negativeNotice.style.display = "none";
+
+        if (error) {
+          trackError(error, monthlyFee, years, freeCount, life1, life2, hasFreeInput);
+        }
+
         errorMsg.textContent = error;
         return;
       }
@@ -663,6 +773,21 @@
         negativeNotice.style.display = "none";
       }
 
+      trackResultView(
+        monthlyFee,
+        years,
+        freeCount,
+        life1,
+        life2,
+        monthlyAfterLife,
+        finalTotal,
+        hasFreeInput
+      );
+
+      if (error) {
+        trackError(error, monthlyFee, years, freeCount, life1, life2, hasFreeInput);
+      }
+
       // 오류 메시지 (라이프 제휴 조건 관련)
       errorMsg.textContent = error;
     }
@@ -678,6 +803,7 @@
     monthlyFeeInput.addEventListener("input", () => {
       const raw = monthlyFeeInput.value.replace(/[^0-9]/g, "");
       monthlyFeeInput.value = raw ? Number(raw).toLocaleString("ko-KR") : "";
+      trackInputStarted();
       calculate();
     });
 
@@ -702,6 +828,7 @@
     yearsInput.addEventListener("input", () => {
       const raw = yearsInput.value.replace(/[^0-9]/g, "");
       yearsInput.value = raw || "";
+      trackInputStarted();
       calculate();
     });
 
@@ -717,8 +844,17 @@
     });
 
     // 셀렉트 / 면제 입력
-    life1Select.addEventListener("change", calculate);
-    life2Select.addEventListener("change", calculate);
+    life1Select.addEventListener("change", () => {
+      trackInputStarted();
+      trackLifeOptionChanged("life1", life1Select.value);
+      calculate();
+    });
+
+    life2Select.addEventListener("change", () => {
+      trackInputStarted();
+      trackLifeOptionChanged("life2", life2Select.value);
+      calculate();
+    });
 
     freeCountInput.addEventListener("input", () => {
       const raw = freeCountInput.value.replace(/[^0-9]/g, "");
@@ -730,7 +866,8 @@
       } else {
         freeNote.style.display = "none";   // 값 지우면 사라짐
       }
-      
+
+      trackInputStarted();
       calculate();
     });
 
@@ -739,16 +876,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
